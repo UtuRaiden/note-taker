@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const uuid = require('../helpers/uuid');
+const notes = require('../db/db.json');
 
 const {readFromFile, readAndAppend, writeToFile} = require('../helpers/fsUtils');
 
@@ -14,7 +15,7 @@ app.post('/', (req,res)=>{
         const newNote = {
             title,
             text,
-            noteId: uuid(),
+            Id: uuid(),
         };
         const response = {
             status:'A new note has been saved!',
@@ -26,7 +27,21 @@ app.post('/', (req,res)=>{
     }
 })
 
-
+app.get('/:id', (req, res) => {
+if(req.params.id){
+    console.info(`${req.method} request received for single note`);
+    const noteId = req.params.id;
+    for (let i =0; i < notes.length; i++) {
+        const currentNote = notes[i];
+        console.info(currentNote.id);
+        if(currentNote.id === noteId){
+            res.json(currentNote)
+            return;
+        }
+    }
+    res.status(404).json('Review ID not found');
+}
+})
 
 
 
